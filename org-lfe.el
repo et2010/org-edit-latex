@@ -43,7 +43,7 @@
 (setq org-src-preserve-indentation t)
 
 (defun org-lfe-wrap-latex-fragment ()
-  "Wrap latex fragment in a latex src block"
+  "Wrap latex fragment in a latex src block."
   (interactive)
   (let* ((ele (org-element-context))
          (beg (org-element-property :begin ele))
@@ -76,7 +76,7 @@
           (insert "#+BEGIN_SRC latex\n")))))))
 
 (defun org-lfe-unwrap-latex-fragment (&rest args)
-  "Unwrap latex fragment"
+  "Unwrap latex fragment."
   (interactive)
   (let* ((ele (org-element-context))
          (lang (org-element-property :language ele))
@@ -100,9 +100,8 @@
         (delete-region (point-at-bol) (1+ (point-at-eol)))))))
 
 (defun org-lfe-wrap-latex-fragment-maybe (&rest args)
-  "Wrap a latex fragment with \"begin_src latex\" and \"end_src\"
-  so that we could edit it like a latex src block. This only
-  works on display math."
+  "Wrap a latex fragment with \"begin_src latex\" and \"end_src\".
+This only works on display math."
   (when (save-excursion
           (goto-char (org-element-property :begin (org-element-context)))
           ;; display math :
