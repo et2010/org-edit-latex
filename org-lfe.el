@@ -1,9 +1,11 @@
-;;; org-lfe.el --- Org LaTeX Fragment Editor         -*- lexical-binding: t; -*-
+;;; org-lfe.el --- Org LaTeX Fragment Editor
 
 ;; Copyright (C) 2017-2018 James Wong
 
-;; Author:  <neoarch@neoarch>
+;; Author:  James Wong <jianwang.academic@gmail.com>
 ;; Keywords: convenience
+;; Version: 0.3.0
+;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,8 +26,8 @@
 ;; block. It's very easy to use. Just move the cursor to the fragment you want
 ;; to change and use `org-edit-special' to edit the fragment in a dedicated latex
 ;; buffer with all the fancy features provided by AucTeX (presuming you already
-;; have it), like highlighting and auto-indent. When you are done editing,
-;; just exit the buffer with `org-edit-src-exit'.
+;; have it), like completion, highlighting and auto-indent. When you are done
+;; editing, just exit the buffer with `org-edit-src-exit'.
 
 ;; Note that currently only latex environment or display math, i.e. latex
 ;; fragments wrapped by $$ (double dollar), \[\] and \begin{} ... \end{} are
