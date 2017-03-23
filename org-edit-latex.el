@@ -127,5 +127,5 @@ This only works on display math."
     (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap)))
 
 
-(provide 'org-lfe)
+(provide 'org-edit-latex)
 ;;; org-edit-latex.el ends here
