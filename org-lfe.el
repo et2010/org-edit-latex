@@ -100,14 +100,16 @@
         (goto-char beg)
         (delete-region (point-at-bol) (1+ (point-at-eol)))))))
 
-(defun org-lfe/wrap-latex-fragment-maybe (&rest args)
+(defun org-lfe/wrap-latex-fragment-maybe (oldfun &rest args)
   "Wrap a latex fragment with \"begin_src latex\" and \"end_src\".
 This only works on display math."
   (when (save-excursion
           (goto-char (org-element-property :begin (org-element-context)))
           ;; display math :
           (looking-at-p "[ \t]*\\$\\$\\|[ \t]*\\\\\\[\\|[ \t]*\\\\begin"))
-    (org-lfe/wrap-latex-fragment)))
+    (org-lfe/wrap-latex-fragment)
+    (let ((org-src-preserve-indentation t))
+      (apply oldfun args))))
 
 ;;;###autoload
 (defun org-lfe/toggle-org-lfe (&optional force-enable)
@@ -118,7 +120,7 @@ This only works on display math."
   (if org-lfe/org-lfe-enable
       (progn
         (message "Org LaTeX Fragment Editor is enabled.")
-        (advice-add #'org-edit-special :before #'org-lfe/wrap-latex-fragment-maybe)
+        (advice-add #'org-edit-special :around #'org-lfe/wrap-latex-fragment-maybe)
         (advice-add #'org-edit-src-exit :after #'org-lfe/unwrap-latex-fragment '((depth . 100))))
     (message "Org LaTeX Fragment Editor is disabled.")
     (advice-remove #'org-edit-special #'org-lfe/wrap-latex-fragment-maybe)
