@@ -4,7 +4,7 @@
 
 ;; Author:  James Wong <jianwang.academic@gmail.com>
 ;; Keywords: convenience
-;; Version: 0.3.0
+;; Version: 0.5.0
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
