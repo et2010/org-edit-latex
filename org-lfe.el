@@ -1,4 +1,4 @@
-;;; org-lfe.el --- Org LaTeX Fragment Editor
+;;; org-edit-latex.el --- Edit LaTeX at New Buffer
 
 ;; Copyright (C) 2017-2018 James Wong
 
@@ -26,7 +26,7 @@
 ;; block.
 
 ;; It's very easy to use. Just toggle this feature on with
-;; `org-lfe/toggle-org-lfe'. Then you can move the cursor to the fragment you
+;; `org-edit-latex-toggle'. Then you can move the cursor to the fragment you
 ;; want  to change and use `org-edit-special' to edit the fragment in a
 ;; dedicated latex buffer. When you are done editing, just exit the buffer with
 ;; `org-edit-src-exit'.
@@ -42,10 +42,10 @@
 (require 'org)
 (require 'org-element)
 
-(defvar org-lfe/org-lfe-enable nil
+(defvar org-edit-latex-enable nil
   "Indicating whether LaTeX fragment editor is enabled.")
 
-(defun org-lfe/wrap-latex-fragment ()
+(defun org-edit-latex--wrap ()
   "Wrap latex fragment in a latex src block."
   (let* ((ele (org-element-context))
          (beg (org-element-property :begin ele))
@@ -77,7 +77,7 @@
           (beginning-of-line)
           (insert "#+BEGIN_SRC latex\n")))))))
 
-(defun org-lfe/unwrap-latex-fragment (&rest args)
+(defun org-edit-latex--unwrap (&rest args)
   "Unwrap latex fragment."
   (let* ((ele (org-element-context))
          (lang (org-element-property :language ele))
@@ -100,32 +100,32 @@
         (goto-char beg)
         (delete-region (point-at-bol) (1+ (point-at-eol)))))))
 
-(defun org-lfe/wrap-latex-fragment-maybe (oldfun &rest args)
+(defun org-edit-latex--unwrap-maybe (oldfun &rest args)
   "Wrap a latex fragment with \"begin_src latex\" and \"end_src\".
 This only works on display math."
   (when (save-excursion
           (goto-char (org-element-property :begin (org-element-context)))
           ;; display math :
           (looking-at-p "[ \t]*\\$\\$\\|[ \t]*\\\\\\[\\|[ \t]*\\\\begin"))
-    (org-lfe/wrap-latex-fragment)
+    (org-edit-latex--wrap)
     (let ((org-src-preserve-indentation t))
       (apply oldfun args))))
 
 ;;;###autoload
-(defun org-lfe/toggle-org-lfe (&optional force-enable)
-  "Toggle Org LaTeX fragment editor."
+(defun org-edit-latex-toggle (&optional force-enable)
+  "Toggle LaTeX editing."
   (interactive)
-  (setq org-lfe/org-lfe-enable
-        (or force-enable (not org-lfe/org-lfe-enable)))
-  (if org-lfe/org-lfe-enable
+  (setq org-edit-latex-enable
+        (or force-enable (not org-edit-latex-enable)))
+  (if org-edit-latex-enable
       (progn
-        (message "Org LaTeX Fragment Editor is enabled.")
-        (advice-add #'org-edit-special :around #'org-lfe/wrap-latex-fragment-maybe)
-        (advice-add #'org-edit-src-exit :after #'org-lfe/unwrap-latex-fragment '((depth . 100))))
-    (message "Org LaTeX Fragment Editor is disabled.")
-    (advice-remove #'org-edit-special #'org-lfe/wrap-latex-fragment-maybe)
-    (advice-remove #'org-edit-src-exit #'org-lfe/unwrap-latex-fragment)))
+        (message "LaTeX editing is enabled.")
+        (advice-add #'org-edit-special :around #'org-edit-latex--unwrap-maybe)
+        (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap '((depth . 100))))
+    (message "LaTeX editing is disabled.")
+    (advice-remove #'org-edit-special #'org-edit-latex--unwrap-maybe)
+    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap)))
 
 
 (provide 'org-lfe)
-;;; org-lfe.el ends here
+;;; org-edit-latex.el ends here
