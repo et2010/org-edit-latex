@@ -51,14 +51,17 @@
          (beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
          (nb (org-element-property :post-blank ele))
-         (env-p (save-excursion
-                  (goto-char beg)
-                  (looking-at-p "^[ \t]*\\\\begin"))))
+         (type (save-excursion
+                 (goto-char beg)
+                 (cond
+                  ((looking-at-p "^[ \t]*\\\\begin") 'environment)
+                  ((looking-at-p "\\\\(\\|\\$[^$]") 'inline)
+                  (t nil)))))
     (when (memq (org-element-type ele)
                 '(latex-fragment latex-environment))
       (save-excursion
         (cond
-         (env-p
+         ((eq type 'environment)
           (goto-char end)
           (when (not (and (eobp)
                           (equal 0 nb)
@@ -70,6 +73,11 @@
           (insert "\n#+END_SRC")
           (goto-char beg)
           (insert "#+BEGIN_SRC latex\n"))
+         ((eq type 'inline)
+          (goto-char (- end nb))
+          (insert "}")
+          (goto-char beg)
+          (insert "src_latex{"))
          (t
           (goto-char end)
           (insert "\n#+END_SRC")
@@ -83,33 +91,36 @@
          (lang (org-element-property :language ele))
          (beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
-         (nb (org-element-property :post-blank ele)))
-    (when (and (eq 'src-block
-                   (org-element-type ele))
-               (string= "latex" lang))
-      (save-excursion
-        (goto-char end)
-        (if (and (eobp)
-                 (equal 0 nb)
-                 (save-excursion
-                   (beginning-of-line)
-                   (looking-at-p "#\\+end_src")))
-            (delete-region (point-at-bol) (point-at-eol))
-          (forward-line (- (1+ nb)))
-          (delete-region (point-at-bol) (1+ (point-at-eol))))
-        (goto-char beg)
-        (delete-region (point-at-bol) (1+ (point-at-eol)))))))
+         (nb (org-element-property :post-blank ele))
+         (type (org-element-type ele)))
+    (when (string= "latex" lang)
+      (if (eq 'src-block type)
+          (save-excursion
+            (goto-char end)
+            (if (and (eobp)
+                     (equal 0 nb)
+                     (save-excursion
+                       (beginning-of-line)
+                       (looking-at-p "#\\+end_src")))
+                (delete-region (point-at-bol) (point-at-eol))
+              (forward-line (- (1+ nb)))
+              (delete-region (point-at-bol) (1+ (point-at-eol))))
+            (goto-char beg)
+            (delete-region (point-at-bol) (1+ (point-at-eol))))
+        ;; inline src block
+        (delete-region (- end nb 1) (- end nb))
+        (delete-region beg (+ beg 10))))))
 
 (defun org-edit-latex--wrap-maybe (oldfun &rest args)
-  "Wrap a latex fragment with \"begin_src latex\" and \"end_src\".
-This only works on display math."
-  (when (save-excursion
-          (goto-char (org-element-property :begin (org-element-context)))
-          ;; display math :
-          (looking-at-p "[ \t]*\\$\\$\\|[ \t]*\\\\\\[\\|[ \t]*\\\\begin"))
-    (org-edit-latex--wrap)
-    (let ((org-src-preserve-indentation t))
-      (apply oldfun args))))
+  "Wrap element at point if its type is latex-fragment or
+latex-environment."
+  (if (memq (org-element-type (org-element-context))
+            '(latex-fragment latex-environment))
+      (progn
+        (org-edit-latex--wrap)
+        (let ((org-src-preserve-indentation t))
+          (apply oldfun args)))
+    (apply oldfun args)))
 
 ;;;###autoload
 (defun org-edit-latex-toggle (&optional force-enable)
