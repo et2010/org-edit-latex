@@ -45,7 +45,7 @@
 (defvar org-edit-latex-enable nil
   "Indicating whether LaTeX fragment editor is enabled.")
 
-(defun org-edit-latex--wrap ()
+(defun org-edit-latex--wrap-latex ()
   "Wrap latex fragment in a latex src block."
   (let* ((ele (org-element-context))
          (beg (org-element-property :begin ele))
@@ -85,7 +85,7 @@
           (beginning-of-line)
           (insert "#+BEGIN_SRC latex\n")))))))
 
-(defun org-edit-latex--unwrap (&rest args)
+(defun org-edit-latex--unwrap-latex (&rest args)
   "Unwrap latex fragment."
   (let* ((ele (org-element-context))
          (lang (org-element-property :language ele))
@@ -117,7 +117,7 @@ latex-environment."
   (if (memq (org-element-type (org-element-context))
             '(latex-fragment latex-environment))
       (progn
-        (org-edit-latex--wrap)
+        (org-edit-latex--wrap-latex)
         (let ((org-src-preserve-indentation t))
           (apply oldfun args)))
     (apply oldfun args)))
@@ -132,10 +132,10 @@ latex-environment."
       (progn
         (message "LaTeX editing is enabled.")
         (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
-        (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap '((depth . 100))))
+        (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap-latex '((depth . 100))))
     (message "LaTeX editing is disabled.")
     (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
-    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap)))
+    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-latex)))
 
 
 (provide 'org-edit-latex)
