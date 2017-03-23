@@ -1,6 +1,8 @@
 ## Org-LFE
 
-Org-LFE is an extension for org-mode. It let you edit a latex fragment just like editing a src block.
+Org-LFE (LaTeX Fragment Editor) is an extension for org-mode. It let you edit a latex fragment just like editing a src block.
+
+![org-lfe](org-lfe.gif)
 
 ### Why?
 LaTeX fragment is a nice feature of orgmode. Unlike LaTeX src block or export block, You can preview a fragment very easily by simply hit `C-c C-x C-l` when on one. But it's lacking an important feature, i.e. it cannot be edited in a dedicated buffer like src block or export block do. Without those nice features like syntax highlighting or auto-indent or completion that you'll usually get with a dedicated latex buffer, I used to find it's intimidating to write long math equations in a LaTeX fragment.
