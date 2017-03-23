@@ -100,7 +100,7 @@
         (goto-char beg)
         (delete-region (point-at-bol) (1+ (point-at-eol)))))))
 
-(defun org-edit-latex--unwrap-maybe (oldfun &rest args)
+(defun org-edit-latex--wrap-maybe (oldfun &rest args)
   "Wrap a latex fragment with \"begin_src latex\" and \"end_src\".
 This only works on display math."
   (when (save-excursion
@@ -120,10 +120,10 @@ This only works on display math."
   (if org-edit-latex-enable
       (progn
         (message "LaTeX editing is enabled.")
-        (advice-add #'org-edit-special :around #'org-edit-latex--unwrap-maybe)
+        (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
         (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap '((depth . 100))))
     (message "LaTeX editing is disabled.")
-    (advice-remove #'org-edit-special #'org-edit-latex--unwrap-maybe)
+    (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
     (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap)))
 
 
