@@ -23,28 +23,30 @@
 ;;; Commentary:
 
 ;; This package will let you edit a latex fragment like editing a src code
-;; block. It's very easy to use. Just move the cursor to the fragment you want
-;; to change and use `org-edit-special' to edit the fragment in a dedicated latex
-;; buffer with all the fancy features provided by AucTeX (presuming you already
-;; have it), like completion, highlighting and auto-indent. When you are done
-;; editing, just exit the buffer with `org-edit-src-exit'.
+;; block.
+
+;; It's very easy to use. Just toggle this feature on with
+;; `org-lfe/toggle-org-lfe'. Then you can move the cursor to the fragment you
+;; want  to change and use `org-edit-special' to edit the fragment in a
+;; dedicated latex buffer. When you are done editing, just exit the buffer with
+;; `org-edit-src-exit'.
 
 ;; Note that currently only latex environment or display math, i.e. latex
-;; fragments wrapped by $$ (double dollar), \[\] and \begin{} ... \end{} are
-;; supported. Since I don't think it's a good idea to use complicated inline
-;; equations and I want to keep this package simple. If you think different,
-;; please contact me.
+;; fragments wrapped by $$ ... $$ (double dollar), \[ ... \] and \begin{} ...
+;; \end{} are supported. Since I don't think it's a good idea to use complicated
+;; inline equations and I want to keep this package simple. If you think
+;; different, please contact me.
 
 ;;; Code:
 
 (require 'org)
 (require 'org-element)
 
-(setq org-src-preserve-indentation t)
+(defvar org-lfe/org-lfe-enable nil
+  "Indicating whether LaTeX fragment editor is enabled.")
 
-(defun org-lfe-wrap-latex-fragment ()
+(defun org-lfe/wrap-latex-fragment ()
   "Wrap latex fragment in a latex src block."
-  (interactive)
   (let* ((ele (org-element-context))
          (beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
@@ -75,9 +77,8 @@
           (beginning-of-line)
           (insert "#+BEGIN_SRC latex\n")))))))
 
-(defun org-lfe-unwrap-latex-fragment (&rest args)
+(defun org-lfe/unwrap-latex-fragment (&rest args)
   "Unwrap latex fragment."
-  (interactive)
   (let* ((ele (org-element-context))
          (lang (org-element-property :language ele))
          (beg (org-element-property :begin ele))
@@ -99,17 +100,29 @@
         (goto-char beg)
         (delete-region (point-at-bol) (1+ (point-at-eol)))))))
 
-(defun org-lfe-wrap-latex-fragment-maybe (&rest args)
+(defun org-lfe/wrap-latex-fragment-maybe (&rest args)
   "Wrap a latex fragment with \"begin_src latex\" and \"end_src\".
 This only works on display math."
   (when (save-excursion
           (goto-char (org-element-property :begin (org-element-context)))
           ;; display math :
           (looking-at-p "[ \t]*\\$\\$\\|[ \t]*\\\\\\[\\|[ \t]*\\\\begin"))
-    (org-lfe-wrap-latex-fragment)))
+    (org-lfe/wrap-latex-fragment)))
 
-(advice-add #'org-edit-special :before #'org-lfe-wrap-latex-fragment-maybe)
-(advice-add #'org-edit-src-exit :after #'org-lfe-unwrap-latex-fragment '((depth . 100)))
+;;;###autoload
+(defun org-lfe/toggle-org-lfe (&optional force-enable)
+  "Toggle Org LaTeX fragment editor."
+  (interactive)
+  (setq org-lfe/org-lfe-enable
+        (or force-enable (not org-lfe/org-lfe-enable)))
+  (if org-lfe/org-lfe-enable
+      (progn
+        (message "Org LaTeX Fragment Editor is enabled.")
+        (advice-add #'org-edit-special :before #'org-lfe/wrap-latex-fragment-maybe)
+        (advice-add #'org-edit-src-exit :after #'org-lfe/unwrap-latex-fragment '((depth . 100))))
+    (message "Org LaTeX Fragment Editor is disabled.")
+    (advice-remove #'org-edit-special #'org-lfe/wrap-latex-fragment-maybe)
+    (advice-remove #'org-edit-src-exit #'org-lfe/unwrap-latex-fragment)))
 
 
 (provide 'org-lfe)
