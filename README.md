@@ -40,3 +40,6 @@ When you don't need org-edit-latex anymore and want to revert to orgmode default
 ### Caveat
 - While org-edit-latex enabled, you _cannot_ edit normal latex src block by <kbd>M-x org-edit-special</kbd> since it will turn the src block into a latex fragment when you exit from edit buffer (only latex src blocks are affected). So if you _really_ need do that, turn off org-edit-latex first.
 - Currently only latex environment or display math, i.e. latex fragments wrapped by `$$ ... $$` (double dollar), `\[ ... \]` and `\begin{} ... \end{}` are supported, since I don't think it's a good idea to use complicated inline equations and I want to keep this package simple. If you think different, please contact me.
+
+### TODO
+- Add support for inline math
