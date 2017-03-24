@@ -36,8 +36,17 @@
 (require 'org)
 (require 'org-element)
 
-(defvar org-edit-latex-enable nil
-  "Indicating whether LaTeX fragment editor is enabled.")
+;;;###autoload
+(define-minor-mode org-edit-latex-mode
+  "LaTeX editing in org mode."
+  :lighter " Edit-LaTeX"
+  (if org-edit-latex-mode
+      (progn
+        (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
+        (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap-maybe '((depth . 100))))
+    (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
+    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)))
+
 
 (defun org-edit-latex--wrap-latex (ele)
   "Wrap latex fragment in a latex src block."
@@ -109,47 +118,34 @@
 
 (defun org-edit-latex--unwrap-maybe (&rest args)
   "Unwrap latex fragment only if it meets certain predicates."
-  (let* ((ele (org-element-context))
-         (type (car ele))
-         (lang (org-element-property :language ele))
-         (beg (org-element-property :begin ele)))
-    (and (equal "latex" lang)
-         (or (and (eq 'src-block type)
-                  (save-excursion
-                    (goto-char beg)
-                    (looking-at-p "^#\\+begin_src latex$")))
-             (and (eq 'inline-src-block type)
-                  (save-excursion
-                    (goto-char beg)
-                    (looking-at-p "src_latex{"))))
-         (org-edit-latex--unwrap-latex ele))))
+  (when org-edit-latex-mode
+    (let* ((ele (org-element-context))
+           (type (car ele))
+           (lang (org-element-property :language ele))
+           (beg (org-element-property :begin ele)))
+      (and (equal "latex" lang)
+           (or (and (eq 'src-block type)
+                    (save-excursion
+                      (goto-char beg)
+                      (looking-at-p "^#\\+begin_src latex$")))
+               (and (eq 'inline-src-block type)
+                    (save-excursion
+                      (goto-char beg)
+                      (looking-at-p "src_latex{"))))
+           (org-edit-latex--unwrap-latex ele)))))
 
 (defun org-edit-latex--wrap-maybe (oldfun &rest args)
   "Wrap element at point if its type is latex-fragment or
 latex-environment."
   (let* ((ele (org-element-context))
          (type (car ele)))
-    (if (memq type '(latex-fragment latex-environment))
+    (if (and org-edit-latex-mode
+             (memq type '(latex-fragment latex-environment)))
         (progn
           (org-edit-latex--wrap-latex ele)
           (let ((org-src-preserve-indentation t))
             (apply oldfun args)))
       (apply oldfun args))))
-
-;;;###autoload
-(defun org-edit-latex-toggle (&optional force-enable)
-  "Toggle LaTeX editing."
-  (interactive)
-  (setq org-edit-latex-enable
-        (or force-enable (not org-edit-latex-enable)))
-  (if org-edit-latex-enable
-      (progn
-        (message "LaTeX editing is enabled.")
-        (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
-        (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap-maybe '((depth . 100))))
-    (message "LaTeX editing is disabled.")
-    (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
-    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)))
 
 
 (provide 'org-edit-latex)
