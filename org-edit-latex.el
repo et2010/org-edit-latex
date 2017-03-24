@@ -45,82 +45,102 @@
 (defvar org-edit-latex-enable nil
   "Indicating whether LaTeX fragment editor is enabled.")
 
-(defun org-edit-latex--wrap-latex ()
+(defun org-edit-latex--wrap-latex (ele)
   "Wrap latex fragment in a latex src block."
-  (let* ((ele (org-element-context))
-         (beg (org-element-property :begin ele))
+  (let* ((beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
          (nb (org-element-property :post-blank ele))
          (type (save-excursion
                  (goto-char beg)
                  (cond
                   ((looking-at-p "^[ \t]*\\\\begin") 'environment)
-                  ((looking-at-p "\\\\(\\|\\$[^$]") 'inline)
+                  ((looking-at-p "\\\\(\\|\\$[^$]\\|\\\\\\sw") 'inline)
                   (t nil)))))
-    (when (memq (org-element-type ele)
-                '(latex-fragment latex-environment))
-      (save-excursion
-        (cond
-         ((eq type 'environment)
-          (goto-char end)
-          (when (not (and (eobp)
-                          (equal 0 nb)
-                          (save-excursion
-                            (beginning-of-line)
-                            (looking-at-p "[ \t]*\\\\end{"))))
-            (forward-line (- (1+ nb)))
-            (end-of-line))
-          (insert "\n#+END_SRC")
-          (goto-char beg)
-          (insert "#+BEGIN_SRC latex\n"))
-         ((eq type 'inline)
-          (goto-char (- end nb))
-          (insert "}")
-          (goto-char beg)
-          (insert "src_latex{"))
-         (t
-          (goto-char end)
-          (insert "\n#+END_SRC")
-          (goto-char beg)
-          (beginning-of-line)
-          (insert "#+BEGIN_SRC latex\n")))))))
+    (save-excursion
+      (cond
+       ((eq type 'environment)
+        (goto-char end)
+        (when (not (and (eobp)
+                        (equal 0 nb)
+                        (save-excursion
+                          (beginning-of-line)
+                          (looking-at-p "[ \t]*\\\\end{"))))
+          (forward-line (- (1+ nb)))
+          (end-of-line))
+        (insert "\n#+END_SRC")
+        (goto-char beg)
+        (insert "#+BEGIN_SRC latex\n"))
+       ((eq type 'inline)
+        (goto-char (- end nb))
+        (insert "}")
+        (goto-char beg)
+        (insert "src_latex{"))
+       (t
+        (goto-char end)
+        (insert "\n#+END_SRC")
+        (goto-char beg)
+        (beginning-of-line)
+        (insert "#+BEGIN_SRC latex\n"))))))
 
-(defun org-edit-latex--unwrap-latex (&rest args)
+(defun org-edit-latex--unwrap-latex (ele)
   "Unwrap latex fragment."
-  (let* ((ele (org-element-context))
-         (lang (org-element-property :language ele))
+  (let* ((lang (org-element-property :language ele))
          (beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
          (nb (org-element-property :post-blank ele))
-         (type (org-element-type ele)))
-    (when (string= "latex" lang)
-      (if (eq 'src-block type)
-          (save-excursion
-            (goto-char end)
-            (if (and (eobp)
-                     (equal 0 nb)
-                     (save-excursion
-                       (beginning-of-line)
-                       (looking-at-p "#\\+end_src")))
-                (delete-region (point-at-bol) (point-at-eol))
-              (forward-line (- (1+ nb)))
-              (delete-region (point-at-bol) (1+ (point-at-eol))))
-            (goto-char beg)
-            (delete-region (point-at-bol) (1+ (point-at-eol))))
-        ;; inline src block
-        (delete-region (- end nb 1) (- end nb))
-        (delete-region beg (+ beg 10))))))
+         (type (car ele)))
+    (cond ((eq 'src-block type)
+           (save-excursion
+             (goto-char end)
+             (if (and (eobp)
+                      (equal 0 nb)
+                      (save-excursion
+                        (beginning-of-line)
+                        (looking-at-p "#\\+end_src")))
+                 (delete-region (point-at-bol) (point-at-eol))
+               (forward-line (- (1+ nb)))
+               (delete-region (point-at-bol) (1+ (point-at-eol))))
+             (goto-char beg)
+             (delete-region (point-at-bol) (1+ (point-at-eol)))))
+          ;; inline src block
+          ((eq 'inline-src-block type)
+           (save-excursion
+             ;; delete trailing "}"
+             (goto-char (- end nb 1))
+             (delete-char 1)
+             ;; delete "src_block{"
+             (goto-char beg)
+             (delete-char 10)))
+          (t nil))))
+
+(defun org-edit-latex--unwrap-maybe (&rest args)
+  "Unwrap latex fragment only if it meets certain predicates."
+  (let* ((ele (org-element-context))
+         (type (car ele))
+         (lang (org-element-property :language ele))
+         (beg (org-element-property :begin ele)))
+    (and (equal "latex" lang)
+         (or (and (eq 'src-block type)
+                  (save-excursion
+                    (goto-char beg)
+                    (looking-at-p "^#\\+begin_src latex$")))
+             (and (eq 'inline-src-block type)
+                  (save-excursion
+                    (goto-char beg)
+                    (looking-at-p "src_latex{"))))
+         (org-edit-latex--unwrap-latex ele))))
 
 (defun org-edit-latex--wrap-maybe (oldfun &rest args)
   "Wrap element at point if its type is latex-fragment or
 latex-environment."
-  (if (memq (org-element-type (org-element-context))
-            '(latex-fragment latex-environment))
-      (progn
-        (org-edit-latex--wrap-latex)
-        (let ((org-src-preserve-indentation t))
-          (apply oldfun args)))
-    (apply oldfun args)))
+  (let* ((ele (org-element-context))
+         (type (car ele)))
+    (if (memq type '(latex-fragment latex-environment))
+        (progn
+          (org-edit-latex--wrap-latex ele)
+          (let ((org-src-preserve-indentation t))
+            (apply oldfun args)))
+      (apply oldfun args))))
 
 ;;;###autoload
 (defun org-edit-latex-toggle (&optional force-enable)
@@ -132,10 +152,10 @@ latex-environment."
       (progn
         (message "LaTeX editing is enabled.")
         (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
-        (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap-latex '((depth . 100))))
+        (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap-maybe '((depth . 100))))
     (message "LaTeX editing is disabled.")
     (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
-    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-latex)))
+    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)))
 
 
 (provide 'org-edit-latex)
