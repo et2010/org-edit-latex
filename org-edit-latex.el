@@ -1,10 +1,10 @@
-;;; org-edit-latex.el --- Edit LaTeX at New Buffer
+;;; org-edit-latex.el --- Edit LaTeX in a dedicated buffer
 
 ;; Copyright (C) 2017-2018 James Wong
 
 ;; Author:  James Wong <jianwang.academic@gmail.com>
 ;; Keywords: convenience
-;; Version: 0.5.0
+;; Version: 0.6.0
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -30,12 +30,6 @@
 ;; want  to change and use `org-edit-special' to edit the fragment in a
 ;; dedicated latex buffer. When you are done editing, just exit the buffer with
 ;; `org-edit-src-exit'.
-
-;; Note that currently only latex environment or display math, i.e. latex
-;; fragments wrapped by $$ ... $$ (double dollar), \[ ... \] and \begin{} ...
-;; \end{} are supported. Since I don't think it's a good idea to use complicated
-;; inline equations and I want to keep this package simple. If you think
-;; different, please contact me.
 
 ;;; Code:
 

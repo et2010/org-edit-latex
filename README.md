@@ -1,13 +1,17 @@
-## Org-Edit-LaTeX
+## Org Edit LaTeX
 
-Org-Edit-LaTeX is an extension for org-mode. It let you edit a latex fragment just like editing a src block.
+org-edit-latex.el is an extension for org-mode. It let you edit a latex fragment/environment just like editing a src block.
 
 ![org-edit-latex](screenshot.gif)
 
-### Why?
-LaTeX fragment is a nice feature of orgmode. Unlike LaTeX src block or export block, You can preview a fragment very easily by simply hit `C-c C-x C-l` when on one. But it's lacking an important feature, i.e. it cannot be edited in a dedicated buffer like src block or export block do. Without those nice features like syntax highlighting or auto-indent or completion that you'll usually get with a dedicated latex buffer, I used to find it's intimidating to write long math equations in a LaTeX fragment.
+### Change Log
+- 0.6.0: Editing of inline latex (including non math latex fragments) is supported.
+...
 
-So I write this package to address above issue. Now I can edit a LaTeX fragment just like editing a src block with all the nifty features provided by AucTeX, like completion, highlighting, and auto-indentation.
+### Why?
+Embedded LaTeX is a nice feature of orgmode. Unlike LaTeX src block or export block, you can preview a LaTeX fragment by simply hit `C-c C-x C-l`. But it's lacking an important feature, i.e. it cannot be edited in a dedicated buffer like src block or export block do. This means you are isolated from all those nice features that you'll get by editing in a dedicated buffer, including syntax highlighting, auto-indent and completion. Without those, it's intimidating to write long math equations as a LaTeX fragment, at least for me.
+
+So I write this package to address above issue. With this package, you can edit a LaTeX fragment just like editing a src block with all the nifty features provided by AucTeX, like completion, highlighting, and auto-indentation.
 
 ### Install
 
@@ -31,15 +35,16 @@ And don't forget to add `latex` to your `org-babel-load-languages` (below is for
 ```
 
 ### How to use?
-First, you should turn on org-edit-latex before using it by <kbd>M-x org-edit-latex-toggle</kbd>.
+First, you should enable org-edit-latex before using it by <kbd>M-x org-edit-latex-toggle</kbd>.
 
-Just move the cursor to the fragment you want to change and use `org-edit-special` to edit. When you are done editing, just exit the buffer with `org-edit-src-exit`. And yes, all those commands are from orgmode. No extra keybindings to memorize!
 
-When you don't need org-edit-latex anymore and want to revert to orgmode default behavior, just <kbd>M-x org-edit-latex-toggle</kbd> again.
+Then you can move cursor to the fragment you want to change and use `org-edit-special` (by default, it is bound to <kbd>C-c '</kbd>)to edit. When you are done editing, just exit the buffer with `org-edit-src-exit` (the keybinding is also <kbd>C-c '</kbd>). And yes, all those are built-in commands from orgmode. No extra keybindings to memorize!
+
+When you don't need org-edit-latex anymore and want to revert to orgmode's default behavior, just <kbd>M-x org-edit-latex-toggle</kbd> again.
 
 ### Caveat
 - While org-edit-latex enabled, you _cannot_ edit normal latex src block by <kbd>M-x org-edit-special</kbd> since it will turn the src block into a latex fragment when you exit from edit buffer (only latex src blocks are affected). So if you _really_ need do that, turn off org-edit-latex first.
-- Currently only latex environment or display math, i.e. latex fragments wrapped by `$$ ... $$` (double dollar), `\[ ... \]` and `\begin{} ... \end{}` are supported, since I don't think it's a good idea to use complicated inline equations and I want to keep this package simple. If you think different, please contact me.
 
 ### TODO
-- Add support for inline math
+- [x] Add support for inline math.
+- [ ] Turn this feature into a minor mode.
