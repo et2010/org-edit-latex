@@ -57,7 +57,8 @@
                  (cond
                   ((looking-at-p "^[ \t]*\\\\begin") 'environment)
                   ((looking-at-p "\\\\(\\|\\$[^$]\\|\\\\\\sw") 'inline)
-                  (t nil)))))
+                  (t nil))))
+         (pt (point)))
     (save-excursion
       (cond
        ((eq type 'environment)
@@ -76,13 +77,14 @@
         (goto-char (- end nb))
         (insert "}")
         (goto-char beg)
-        (insert "src_latex{"))
+        (insert " src_latex{"))
        (t
         (goto-char end)
         (insert "\n#+END_SRC")
         (goto-char beg)
         (beginning-of-line)
-        (insert "#+BEGIN_SRC latex\n"))))))
+        (insert "#+BEGIN_SRC latex\n"))))
+    (when (= pt beg) (goto-char (1+ pt)))))
 
 (defun org-edit-latex--unwrap-latex (ele)
   "Unwrap latex fragment."
@@ -110,9 +112,9 @@
              ;; delete trailing "}"
              (goto-char (- end nb 1))
              (delete-char 1)
-             ;; delete "src_block{"
-             (goto-char beg)
-             (delete-char 10)))
+             ;; delete " src_block{", note there is a space before "src_block{"
+             (goto-char (1- beg))
+             (delete-char 11)))
           (t nil))))
 
 (defun org-edit-latex--unwrap-maybe (&rest args)
