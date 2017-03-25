@@ -1,3 +1,5 @@
+[![MELPA](http://melpa.milkbox.net/packages/org-edit-latex-badge.svg)](http://melpa.milkbox.net/#/org-edit-latex)
+
 ## Org Edit LaTeX
 
 org-edit-latex.el is an extension for org-mode. It let you edit a latex fragment/environment just like editing a src block.
