@@ -44,7 +44,7 @@
 (require 'org)
 (require 'org-element)
 
-(defvar org-edit-latex-edited-element-type nil
+(defvar-local org-edit-latex-edited-element-type nil
   "The type of the edited element.")
 
 ;;;###autoload
@@ -56,7 +56,8 @@
         (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
         (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap-maybe '((depth . 100))))
     (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
-    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)))
+    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)
+    (setq org-edit-latex-edited-element-type nil)))
 
 
 (defun org-edit-latex--wrap-latex (ele)
@@ -138,19 +139,17 @@
 
 (defun org-edit-latex--wrap-maybe (oldfun &rest args)
   "Wrap element at point if its type is latex-fragment or
-latex-environment.
-
-Returns element type at point."
+latex-environment."
   (if org-edit-latex-mode
       (let* ((ele (org-element-context))
              (type (car ele)))
+        (setq org-edit-latex-edited-element-type type)
         (if (memq type '(latex-fragment latex-environment))
             (progn
               (org-edit-latex--wrap-latex ele)
               (let ((org-src-preserve-indentation t))
                 (apply oldfun args)))
-          (apply oldfun args))
-        (setq org-edit-latex-edited-element-type type))
+          (apply oldfun args)))
     (apply oldfun args)))
 
 
