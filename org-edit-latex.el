@@ -141,16 +141,17 @@
 latex-environment.
 
 Returns element type at point."
-  (let* ((ele (org-element-context))
-         (type (car ele)))
-    (if (and org-edit-latex-mode
-             (memq type '(latex-fragment latex-environment)))
-        (progn
-          (org-edit-latex--wrap-latex ele)
-          (let ((org-src-preserve-indentation t))
-            (apply oldfun args)))
-      (apply oldfun args))
-    (setq org-edit-latex-edited-element-type type)))
+  (if org-edit-latex-mode
+      (let* ((ele (org-element-context))
+             (type (car ele)))
+        (if (memq type '(latex-fragment latex-environment))
+            (progn
+              (org-edit-latex--wrap-latex ele)
+              (let ((org-src-preserve-indentation t))
+                (apply oldfun args)))
+          (apply oldfun args))
+        (setq org-edit-latex-edited-element-type type))
+    (apply oldfun args)))
 
 
 (provide 'org-edit-latex)
