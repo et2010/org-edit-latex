@@ -4,10 +4,6 @@ org-edit-latex.el is an extension for org-mode. It let you edit a latex fragment
 
 ![org-edit-latex](screenshot.gif)
 
-### Change Log
-- 0.6.0: Editing of inline latex (including non math latex fragments) is supported.
-...
-
 ### Why?
 Embedded LaTeX is a nice feature of orgmode. Unlike LaTeX src block or export block, you can preview a LaTeX fragment by simply hit `C-c C-x C-l`. But it's lacking an important feature, i.e. it cannot be edited in a dedicated buffer like src block or export block do. This means you are isolated from all those nice features that you'll get by editing in a dedicated buffer, including syntax highlighting, auto-indent and completion. Without those, it's intimidating to write long math equations as a LaTeX fragment, at least for me.
 
@@ -42,8 +38,12 @@ Then you can move cursor to the fragment you want to change and use `org-edit-sp
 
 When you don't need org-edit-latex anymore and want to revert to orgmode's default behavior, just <kbd>M-x org-edit-latex-mode</kbd> again.
 
-### Caveat
-- While org-edit-latex enabled, you _cannot_ edit normal latex src block by <kbd>M-x org-edit-special</kbd> since it will turn the src block into a latex fragment when you exit from edit buffer (only latex src blocks are affected). So if you _really_ need do that, turn off org-edit-latex first.
+
+### Change Log
+- 0.6.2 src blocks will be untouched.
+- 0.6.1 Fix inline src block not recognized.
+- 0.6.0 Editing of inline latex (including non math latex fragments) is supported.
+...
 
 ### TODO
 - [x] Add support for inline math.
