@@ -44,6 +44,9 @@
 (require 'org)
 (require 'org-element)
 
+(defvar org-edit-latex-edited-element-type nil
+  "The type of the edited element.")
+
 ;;;###autoload
 (define-minor-mode org-edit-latex-mode
   "LaTeX editing in org mode."
@@ -128,7 +131,9 @@
 
 (defun org-edit-latex--unwrap-maybe (&rest args)
   "Unwrap latex fragment only if it meets certain predicates."
-  (when org-edit-latex-mode
+  (when (and org-edit-latex-mode
+             (memq org-edit-latex-edited-element-type
+                   '(latex-fragment latex-environment)))
     (let* ((ele (org-element-context))
            (type (car ele))
            (lang (org-element-property :language ele))
@@ -146,7 +151,9 @@
 
 (defun org-edit-latex--wrap-maybe (oldfun &rest args)
   "Wrap element at point if its type is latex-fragment or
-latex-environment."
+latex-environment.
+
+Returns element type at point."
   (let* ((ele (org-element-context))
          (type (car ele)))
     (if (and org-edit-latex-mode
@@ -155,7 +162,8 @@ latex-environment."
           (org-edit-latex--wrap-latex ele)
           (let ((org-src-preserve-indentation t))
             (apply oldfun args)))
-      (apply oldfun args))))
+      (apply oldfun args))
+    (setq org-edit-latex-edited-element-type type)))
 
 
 (provide 'org-edit-latex)
