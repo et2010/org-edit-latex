@@ -35,16 +35,16 @@ And don't forget to add `latex` to your `org-babel-load-languages` (below is for
 ```
 
 ### How to use?
-First, you should enable org-edit-latex before using it by <kbd>M-x org-edit-latex-toggle</kbd>.
+First, you should enable org-edit-latex before using it by <kbd>M-x org-edit-latex-mode</kbd>.
 
 
 Then you can move cursor to the fragment you want to change and use `org-edit-special` (by default, it is bound to <kbd>C-c '</kbd>)to edit. When you are done editing, just exit the buffer with `org-edit-src-exit` (the keybinding is also <kbd>C-c '</kbd>). And yes, all those are built-in commands from orgmode. No extra keybindings to memorize!
 
-When you don't need org-edit-latex anymore and want to revert to orgmode's default behavior, just <kbd>M-x org-edit-latex-toggle</kbd> again.
+When you don't need org-edit-latex anymore and want to revert to orgmode's default behavior, just <kbd>M-x org-edit-latex-mode</kbd> again.
 
 ### Caveat
 - While org-edit-latex enabled, you _cannot_ edit normal latex src block by <kbd>M-x org-edit-special</kbd> since it will turn the src block into a latex fragment when you exit from edit buffer (only latex src blocks are affected). So if you _really_ need do that, turn off org-edit-latex first.
 
 ### TODO
 - [x] Add support for inline math.
-- [ ] Turn this feature into a minor mode.
+- [x] Turn this feature into a minor mode. (by purcell)

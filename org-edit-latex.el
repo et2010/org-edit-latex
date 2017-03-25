@@ -25,11 +25,10 @@
 ;; This package will let you edit a latex fragment like editing a src code
 ;; block.
 
-;; It's very easy to use. Just toggle this feature on with
-;; `org-edit-latex-toggle'. Then you can move the cursor to the fragment you
-;; want  to change and use `org-edit-special' to edit the fragment in a
-;; dedicated latex buffer. When you are done editing, just exit the buffer with
-;; `org-edit-src-exit'.
+;; It's very easy to use. Just enable this feature by `org-edit-latex-mode'.
+;; Then you can move the cursor to the fragment you want to change and use
+;; `org-edit-special' to edit the fragment in a dedicated latex buffer. When you
+;; are done editing, just exit the buffer with `org-edit-src-exit'.
 
 ;;; Code:
 
