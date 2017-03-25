@@ -134,20 +134,7 @@
   (when (and org-edit-latex-mode
              (memq org-edit-latex-edited-element-type
                    '(latex-fragment latex-environment)))
-    (let* ((ele (org-element-context))
-           (type (car ele))
-           (lang (org-element-property :language ele))
-           (beg (org-element-property :begin ele)))
-      (and (equal "latex" lang)
-           (or (and (eq 'src-block type)
-                    (save-excursion
-                      (goto-char beg)
-                      (looking-at-p "^#\\+begin_src latex$")))
-               (and (eq 'inline-src-block type)
-                    (save-excursion
-                      (goto-char beg)
-                      (looking-at-p "src_latex{"))))
-           (org-edit-latex--unwrap-latex ele)))))
+    (org-edit-latex--unwrap-latex (org-element-context))))
 
 (defun org-edit-latex--wrap-maybe (oldfun &rest args)
   "Wrap element at point if its type is latex-fragment or
