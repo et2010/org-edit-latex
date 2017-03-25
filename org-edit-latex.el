@@ -2,8 +2,9 @@
 
 ;; Copyright (C) 2017-2018 James Wong
 
-;; Author:  James Wong <jianwang.academic@gmail.com>
-;; Keywords: convenience
+;; Author: James Wong <jianwang.academic@gmail.com>
+;; URL: https://github.com/et2010/org-edit-latex
+;; Keywords: org, LaTeX
 ;; Version: 0.6.1
 ;; Package-Requires: ((emacs "24.4"))
 
@@ -25,10 +26,18 @@
 ;; This package will let you edit a latex fragment like editing a src code
 ;; block.
 
-;; It's very easy to use. Just enable this feature by `org-edit-latex-mode'.
-;; Then you can move the cursor to the fragment you want to change and use
-;; `org-edit-special' to edit the fragment in a dedicated latex buffer. When you
-;; are done editing, just exit the buffer with `org-edit-src-exit'.
+;; Usage
+;; =====
+
+;; First, turn on `org-edit-latex-mode'. Then you can edit a LaTeX fragment just
+;; as what you'll do to edit a src block.
+
+;; Use `org-edit-special' to enter a dedicated LaTeX buffer.
+;; Use `org-edit-src-exit' to exit LaTeX buffer when you finished editing.
+;; Use `org-edit-src-abort' to quit editing without saving changes.
+
+;; Note that all above commands are built-in Org commands, so your current
+;; keybindings to them will do the job.
 
 ;;; Code:
 
