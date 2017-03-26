@@ -1,11 +1,11 @@
-;;; org-edit-latex.el --- Edit LaTeX in a dedicated buffer
+;;; org-edit-latex.el --- Edit embedded LaTeX in a dedicated buffer
 
 ;; Copyright (C) 2017-2018 James Wong
 
 ;; Author: James Wong <jianwang.academic@gmail.com>
 ;; URL: https://github.com/et2010/org-edit-latex
 ;; Keywords: org, LaTeX
-;; Version: 0.6.2
+;; Version: 0.6.3
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
