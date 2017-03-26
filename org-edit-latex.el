@@ -44,8 +44,8 @@
 (require 'org)
 (require 'org-element)
 
-(defvar-local org-edit-latex-edited-element-type nil
-  "The type of the edited element.")
+(defvar-local org-edit-latex--before-type nil
+  "Element type before wrapping.")
 
 ;;;###autoload
 (define-minor-mode org-edit-latex-mode
@@ -54,10 +54,9 @@
   (if org-edit-latex-mode
       (progn
         (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
-        (advice-add #'org-edit-src-exit :after #'org-edit-latex--unwrap-maybe '((depth . 100))))
+        (advice-add #'org-edit-src-exit :around #'org-edit-latex--unwrap-maybe))
     (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
-    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)
-    (setq org-edit-latex-edited-element-type nil)))
+    (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)))
 
 
 (defun org-edit-latex--wrap-latex (ele)
@@ -130,12 +129,21 @@
              (delete-char 11)))
           (t nil))))
 
-(defun org-edit-latex--unwrap-maybe (&rest args)
+(defun org-edit-latex--unwrap-maybe (oldfun &rest args)
   "Unwrap latex fragment only if it meets certain predicates."
+  (let ((beg org-src--beg-marker))
+    (if (save-excursion
+          (set-buffer (marker-buffer beg))
+          (goto-char beg)
+          (eq 'inline-src-block (car (org-element-context))))
+        (let ((org-src--remote t))
+          (funcall oldfun))
+      (funcall oldfun)))
   (when (and org-edit-latex-mode
-             (memq org-edit-latex-edited-element-type
+             (memq org-edit-latex--before-type
                    '(latex-fragment latex-environment)))
-    (org-edit-latex--unwrap-latex (org-element-context))))
+    (org-edit-latex--unwrap-latex (org-element-context))
+    (setq org-edit-latex--before-type nil)))
 
 (defun org-edit-latex--wrap-maybe (oldfun &rest args)
   "Wrap element at point if its type is latex-fragment or
@@ -143,7 +151,7 @@ latex-environment."
   (if org-edit-latex-mode
       (let* ((ele (org-element-context))
              (type (car ele)))
-        (setq org-edit-latex-edited-element-type type)
+        (setq org-edit-latex--before-type type)
         (if (memq type '(latex-fragment latex-environment))
             (progn
               (org-edit-latex--wrap-latex ele)
