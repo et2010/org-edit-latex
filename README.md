@@ -9,7 +9,7 @@ org-edit-latex.el is an extension for org-mode. It let you edit a latex fragment
 ### Why?
 Embedded LaTeX is a nice feature of orgmode. Unlike LaTeX src block or export block, you can preview a LaTeX fragment by simply hit `C-c C-x C-l`. But it's lacking an important feature, i.e. it cannot be edited in a dedicated buffer like src block or export block do. This means you are isolated from all those nice features that you'll get by editing in a dedicated buffer, including syntax highlighting, auto-indent and completion. Without those, it's intimidating to write long math equations as a LaTeX fragment, at least for me.
 
-So I write this package to address above issue. With this package, you can edit a LaTeX fragment just like editing a src block with all the nifty features provided by AucTeX, like completion, highlighting, and auto-indentation.
+So I write this package to address above issue. With this package, you can edit a LaTeX fragment just like editing a src block with all the nifty features provided by AucTeX (I'm assuming you already have it. If not, just try it! You won't regret!), like completion, highlighting, and auto-indentation.
 
 ### Install
 
@@ -33,13 +33,15 @@ And don't forget to add `latex` to your `org-babel-load-languages` (below is for
 ```
 
 ### How to use?
-First, you should enable org-edit-latex before using it by <kbd>M-x org-edit-latex-mode</kbd>.
+First, turn on `org-edit-latex-mode`. Then you can edit a LaTeX fragment just
+as what you'll do to edit a src block.
 
+- Use `org-edit-special` to enter a dedicated LaTeX buffer.
+- Use `org-edit-src-exit` to exit LaTeX buffer when you finished editing.
+- Use `org-edit-src-abort` to quit editing without saving changes.
 
-Then you can move cursor to the fragment you want to change and use `org-edit-special` (by default, it is bound to <kbd>C-c '</kbd>)to edit. When you are done editing, just exit the buffer with `org-edit-src-exit` (the keybinding is also <kbd>C-c '</kbd>). And yes, all those are built-in commands from orgmode. No extra keybindings to memorize!
-
-When you don't need org-edit-latex anymore and want to revert to orgmode's default behavior, just <kbd>M-x org-edit-latex-mode</kbd> again.
-
+Note that all above commands are built-in Org commands, so your current
+keybindings will probably do the job.
 
 ### Change Log
 - 0.6.2 src blocks will be untouched.
