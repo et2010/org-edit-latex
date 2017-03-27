@@ -47,6 +47,14 @@
 (defvar-local org-edit-latex--before-type nil
   "Element type before wrapping.")
 
+(defconst org-edit-latex-env-beg-regexp
+  "^[ \t]*\\\\begin\\|#\\+\\(?:name\\|caption\\):"
+  "Regexp to match beginning of LaTeX environment")
+
+(defconst org-edit-latex-inline-beg-regexp
+  "\\\\(\\|\\$[^$]\\|\\\\\\sw"
+  "Regexp to match beginning of inline LaTeX")
+
 ;;;###autoload
 (define-minor-mode org-edit-latex-mode
   "LaTeX editing in org mode."
@@ -61,14 +69,15 @@
 
 (defun org-edit-latex--wrap-latex (ele)
   "Wrap latex fragment in a latex src block."
-  (let* ((beg (org-element-property :begin ele))
+  (let* ((val (org-element-property :value ele))
+         (beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
          (nb (org-element-property :post-blank ele))
          (type (save-excursion
                  (goto-char beg)
                  (cond
-                  ((looking-at-p "^[ \t]*\\\\begin") 'environment)
-                  ((looking-at-p "\\\\(\\|\\$[^$]\\|\\\\\\sw") 'inline)
+                  ((looking-at-p org-edit-latex-env-beg-regexp) 'environment)
+                  ((looking-at-p org-edit-latex-inline-beg-regexp) 'inline)
                   (t nil))))
          (pt (point)))
     (save-excursion
@@ -82,9 +91,11 @@
                           (looking-at-p "[ \t]*\\\\end{"))))
           (forward-line (- (1+ nb)))
           (end-of-line))
+        (setq end (point))
         (insert "\n#+END_SRC")
-        (goto-char beg)
-        (insert "#+BEGIN_SRC latex\n"))
+        (goto-char (1+ (- end (length val))))
+        (setq beg (point))
+        (insert "\n#+BEGIN_SRC latex\n"))
        ((eq type 'inline)
         (goto-char (- end nb))
         (insert "}")
@@ -95,7 +106,7 @@
         (insert "\n#+END_SRC")
         (goto-char beg)
         (beginning-of-line)
-        (insert "#+BEGIN_SRC latex\n"))))
+        (insert "\n#+BEGIN_SRC latex\n"))))
     (when (= pt beg) (goto-char (1+ pt)))))
 
 (defun org-edit-latex--unwrap-latex (ele)
@@ -117,7 +128,7 @@
                (forward-line (- (1+ nb)))
                (delete-region (point-at-bol) (1+ (point-at-eol))))
              (goto-char beg)
-             (delete-region (point-at-bol) (1+ (point-at-eol)))))
+             (delete-region (1- (point-at-bol)) (1+ (point-at-eol)))))
           ;; inline src block
           ((eq 'inline-src-block type)
            (save-excursion
@@ -152,7 +163,11 @@ latex-environment."
       (let* ((ele (org-element-context))
              (type (car ele)))
         (setq org-edit-latex--before-type type)
-        (if (memq type '(latex-fragment latex-environment))
+        (if (or (eq type 'latex-fragment)
+                (and (eq type 'latex-environment)
+                     (save-excursion
+                       (beginning-of-line)
+                       (not (looking-at-p "^#\\+")))))
             (progn
               (org-edit-latex--wrap-latex ele)
               (let ((org-src-preserve-indentation t))
