@@ -44,6 +44,7 @@ Note that all above commands are built-in Org commands, so your current
 keybindings will probably do the job.
 
 ### Change Log
+- 0.7.0 Fix a few bugs regarding latex fragment/environment with name/caption/attrib.
 - 0.6.3 Fix inline math issue caused by a bug from org.
 - 0.6.2 src blocks will be untouched.
 - 0.6.1 Fix inline src block not recognized.
