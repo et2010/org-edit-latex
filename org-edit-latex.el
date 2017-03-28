@@ -47,10 +47,6 @@
 (defvar-local org-edit-latex--before-type nil
   "Element type before wrapping.")
 
-(defconst org-edit-latex-env-beg-regexp
-  "^[ \t]*\\\\begin\\|#\\+\\(?:name\\|caption\\):"
-  "Regexp to match beginning of LaTeX environment")
-
 (defconst org-edit-latex-inline-beg-regexp
   "\\\\(\\|\\$[^$]\\|\\\\\\sw"
   "Regexp to match beginning of inline LaTeX")
@@ -73,15 +69,16 @@
          (beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
          (nb (org-element-property :post-blank ele))
-         (type (save-excursion
-                 (goto-char beg)
-                 (cond
-                  ((looking-at-p org-edit-latex-env-beg-regexp) 'environment)
-                  ((looking-at-p org-edit-latex-inline-beg-regexp) 'inline)
-                  (t nil))))
+         (type (cond
+                ((eq (car ele) 'latex-environment) 'environment)
+                ((save-excursion
+                   (goto-char beg)
+                   (looking-at-p org-edit-latex-inline-beg-regexp)) 'inline)
+                (t nil)))
          (pt (point)))
     (save-excursion
       (cond
+       ;; latex environment
        ((eq type 'environment)
         (goto-char end)
         (when (not (and (eobp)
@@ -96,15 +93,17 @@
         (goto-char (1+ (- end (length val))))
         (setq beg (point))
         (insert "\n#+BEGIN_SRC latex\n"))
+       ;; inline latex fragment
        ((eq type 'inline)
         (goto-char (- end nb))
         (insert "}")
         (goto-char beg)
         (insert " src_latex{"))
+       ;; display latex fragment
        (t
         (goto-char end)
         (insert "\n#+END_SRC")
-        (goto-char beg)
+        (goto-char (1+ (- end (length val))))
         (beginning-of-line)
         (insert "\n#+BEGIN_SRC latex\n"))))
     (when (= pt beg) (goto-char (1+ pt)))))
