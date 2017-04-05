@@ -65,10 +65,10 @@
 
 (defun org-edit-latex--wrap-latex (ele)
   "Wrap latex fragment in a latex src block."
-  (let* ((val (org-element-property :value ele))
-         (beg (org-element-property :begin ele))
+  (let* ((beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
-         (nb (org-element-property :post-blank ele))
+         (pb (org-element-property :post-blank ele))
+         (pa (org-element-property :post-affiliated ele))
          (type (cond
                 ((eq (car ele) 'latex-environment) 'environment)
                 ((save-excursion
@@ -82,20 +82,18 @@
        ((eq type 'environment)
         (goto-char end)
         (when (not (and (eobp)
-                        (equal 0 nb)
+                        (equal 0 pb)
                         (save-excursion
                           (beginning-of-line)
                           (looking-at-p "[ \t]*\\\\end{"))))
-          (forward-line (- (1+ nb)))
+          (forward-line (- (1+ pb)))
           (end-of-line))
-        (setq end (point))
         (insert "\n#+END_SRC")
-        (goto-char (1+ (- end (length val))))
-        (setq beg (point))
-        (insert "\n#+BEGIN_SRC latex\n"))
+        (goto-char (setq beg pa))
+        (insert "#+BEGIN_SRC latex\n"))
        ;; inline latex fragment
        ((eq type 'inline)
-        (goto-char (- end nb))
+        (goto-char (- end pb))
         (insert "}")
         (goto-char beg)
         (insert " src_latex{"))
@@ -103,9 +101,9 @@
        (t
         (goto-char end)
         (insert "\n#+END_SRC")
-        (goto-char (1+ (- end (length val))))
+        (goto-char beg)
         (beginning-of-line)
-        (insert "\n#+BEGIN_SRC latex\n"))))
+        (insert "#+BEGIN_SRC latex\n"))))
     (when (= pt beg) (goto-char (1+ pt)))))
 
 (defun org-edit-latex--unwrap-latex (ele)
@@ -113,26 +111,27 @@
   (let* ((lang (org-element-property :language ele))
          (beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
-         (nb (org-element-property :post-blank ele))
+         (pa (org-element-property :post-affiliated ele))
+         (pb (org-element-property :post-blank ele))
          (type (car ele)))
     (cond ((eq 'src-block type)
            (save-excursion
              (goto-char end)
              (if (and (eobp)
-                      (equal 0 nb)
+                      (equal 0 pb)
                       (save-excursion
                         (beginning-of-line)
                         (looking-at-p "#\\+end_src")))
                  (delete-region (point-at-bol) (point-at-eol))
-               (forward-line (- (1+ nb)))
+               (forward-line (- (1+ pb)))
                (delete-region (point-at-bol) (1+ (point-at-eol))))
-             (goto-char beg)
-             (delete-region (1- (point-at-bol)) (1+ (point-at-eol)))))
+             (goto-char pa)
+             (delete-region pa (1+ (point-at-eol)))))
           ;; inline src block
           ((eq 'inline-src-block type)
            (save-excursion
              ;; delete trailing "}"
-             (goto-char (- end nb 1))
+             (goto-char (- end pb 1))
              (delete-char 1)
              ;; delete " src_block{", note there is a space before "src_block{"
              (goto-char (1- beg))
