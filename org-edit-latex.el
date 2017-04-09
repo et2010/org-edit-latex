@@ -141,14 +141,15 @@
 
 (defun org-edit-latex--unwrap-maybe (oldfun &rest args)
   "Unwrap latex fragment only if it meets certain predicates."
-  (let ((beg org-src--beg-marker))
-    (if (save-excursion
-          (set-buffer (marker-buffer beg))
-          (goto-char beg)
-          (eq 'inline-src-block (car (org-element-context))))
-        (let ((org-src--remote t))
-          (funcall oldfun))
-      (funcall oldfun)))
+  (if (and (boundp 'org-src--beg-marker)
+           (let ((beg org-src--beg-marker))
+             (save-excursion
+               (set-buffer (marker-buffer beg))
+               (goto-char beg)
+               (eq 'inline-src-block (car (org-element-context))))))
+      (let ((org-src--remote t))
+        (funcall oldfun))
+    (funcall oldfun))
   (when (and org-edit-latex-mode
              (memq org-edit-latex--before-type
                    '(latex-fragment latex-environment)))
