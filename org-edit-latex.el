@@ -1,4 +1,4 @@
-;;; org-edit-latex.el --- Edit embedded LaTeX in a dedicated buffer
+;;; org-edit-latex.el --- Edit embedded LaTeX in a dedicated buffer  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017-2018 James Wong
 
