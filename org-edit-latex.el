@@ -5,8 +5,8 @@
 ;; Author: James Wong <jianwang.academic@gmail.com>
 ;; URL: https://github.com/et2010/org-edit-latex
 ;; Keywords: org, LaTeX
-;; Version: 0.7.0
-;; Package-Requires: ((emacs "24.4"))
+;; Version: 0.8.0
+;; Package-Requires: ((emacs "24.4") (org "9.0") (auctex "11.90"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 (require 'org)
 (require 'org-element)
 (require 'ox-latex)
+(require 'preview)
 
 (defcustom org-edit-latex-frag-master "frag-master.tex"
   "Master file for LaTeX fragments."
@@ -83,7 +84,16 @@
   "Set `TeX-master' variable for specific src-edit buffer."
   (when (and (file-exists-p org-edit-latex-frag-master)
              (eq major-mode 'latex-mode))
-    (setq TeX-master org-edit-latex-frag-master)))
+    (setq TeX-master org-edit-latex-frag-master)
+    (define-key (current-local-map) [remap preview-at-point]
+      'org-edit-latex-preview-at-point)))
+
+;;;###autoload
+(defun org-edit-latex-preview-at-point ()
+  "Preview LaTeX at point in the edit buffer."
+  (interactive)
+  (let ((buffer-file-name nil))
+    (preview-at-point)))
 
 ;;;###autoload
 (defun org-edit-latex-create-master-maybe ()
