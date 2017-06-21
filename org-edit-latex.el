@@ -51,7 +51,7 @@
   :group 'org-edit-latex
   :version "24.4")
 
-(defcustom org-edit-latex-create-master nil
+(defcustom org-edit-latex-create-master t
   "Decide whether we should create a TeX-master file."
   :group 'org-edit-latex
   :version "24.4")
