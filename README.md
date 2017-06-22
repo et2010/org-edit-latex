@@ -32,7 +32,7 @@ And don't forget to add `latex` to your `org-babel-load-languages` (below is for
    (perl . t)))
 ```
 
-### How to use?
+### Basic Usage
 First, turn on `org-edit-latex-mode`. Then you can edit a LaTeX fragment just
 as what you'll do to edit a src block.
 
@@ -43,7 +43,26 @@ as what you'll do to edit a src block.
 Note that all above commands are built-in Org commands, so your current
 keybindings will probably do the job.
 
+### TeX Master
+By default, `org-edit-latex` will generate a TeX master file automatically. The master file use the same settings as org preview. With a TeX master, it is possible to:
+
+- Complete according to specified LaTeX packages.
+- Preview in the edit buffer.
+
+Following snippet demonstrates how to set up a TeX master:
+```elisp
+(setq org-edit-latex-create-master t)
+(setq org-edit-latex-packages-alist
+      '(("range-phrase=-,range-units=single" "siunitx")
+        ("" "mathptmx")))
+```
+
+The master file locates in the same directory as the org file. You can update the master file with `org-edit-latex-update-master` after you change the preview settings.
+
+When you are in the edit buffer, You can use `org-edit-latex-preview-at-point` to preview. By default, the keybinding of `preview-at-point` is remapped to this function.
+
 ### Change Log
+- 0.8.0 Add support for TeX-master; provide preview function.
 - 0.7.0 Fix a few bugs regarding latex fragment/environment with name/caption/attrib.
 - 0.6.3 Fix inline math issue caused by a bug from org.
 - 0.6.2 src blocks will be untouched.
