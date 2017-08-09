@@ -48,7 +48,7 @@ cdlatex is pretty straightforward, see
 
 To get started, you may also want to check out
 [yasnippet](https://github.com/joaotavora/yasnippet) to fast insert a latex
-environment before you can use `org-edit-special`
+environment before you can use `org-edit-special` to enter the edit buffer.
 
 ### TeX Master
 By default, `org-edit-latex` will generate a TeX-master file automatically. The
@@ -79,11 +79,11 @@ default, the keybinding of `preview-at-point` (AucTeX) is remapped to this
 function.
 
 #### Demo
-**with master:**
-![with master](./screenshots/with-master.gif)
-
 **w/o master:**
 ![without master](./screenshots/without-master.gif)
+
+**with master:**
+![with master](./screenshots/with-master.gif)
 
 ### Change Log
 - 0.8.0 Add support for TeX-master; provide preview function.
