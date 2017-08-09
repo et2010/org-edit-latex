@@ -2,24 +2,21 @@
 
 ## Org Edit LaTeX
 
-org-edit-latex.el is an extension for org-mode. It let you edit a latex fragment/environment just like editing a src block.
+org-edit-latex.el is an extension for org-mode. It let you edit a latex
+fragment/environment just like editing a src block, i.e. you can edit latex in a
+edit buffer.
 
-![org-edit-latex](screenshot.gif)
-
-### Why?
-Embedded LaTeX is a nice feature of orgmode. Unlike LaTeX src block or export block, you can preview a LaTeX fragment by simply hit `C-c C-x C-l`. But it's lacking an important feature, i.e. it cannot be edited in a dedicated buffer like src block or export block do. This means you are isolated from all those nice features that you'll get by editing in a dedicated buffer, including syntax highlighting, auto-indent and completion. Without those, it's intimidating to write long math equations as a LaTeX fragment, at least for me.
-
-So I write this package to address above issue. With this package, you can edit a LaTeX fragment just like editing a src block with all the nifty features provided by AucTeX (I'm assuming you already have it. If not, just try it! You won't regret!), like completion, highlighting, and auto-indentation.
+![org-edit-latex](./screenshots/demo.gif)
 
 ### Install
 
-First, download this package and include its path in your `load-path`. Then, you can add following in your init file:
+First, download `org-edit-latex` and add following to your init file:
 
 ```
 (require 'org-edit-latex)
 ```
 
-And don't forget to add `latex` to your `org-babel-load-languages` (below is for demonstration, your languages list may differ from it.)
+You should add `latex` to your `org-babel-load-languages`:
 
 ```
 (org-babel-do-load-languages
@@ -33,23 +30,39 @@ And don't forget to add `latex` to your `org-babel-load-languages` (below is for
 ```
 
 ### Basic Usage
-First, turn on `org-edit-latex-mode`. Then you can edit a LaTeX fragment just
-as what you'll do to edit a src block.
+Turn on `org-edit-latex-mode` and use following commands to start/exit/abort a
+edit buffer.
 
-- Use `org-edit-special` to enter a dedicated LaTeX buffer.
-- Use `org-edit-src-exit` to exit LaTeX buffer when you finished editing.
-- Use `org-edit-src-abort` to quit editing without saving changes.
+- `org-edit-special`: enter a dedicated LaTeX buffer.
+- `org-edit-src-exit`: exit LaTeX buffer when you finished editing.
+- `org-edit-src-abort`: quit editing without saving changes.
 
-Note that all above commands are built-in Org commands, so your current
+Note that all above commands are built-in Org commands and your current
 keybindings will probably do the job.
 
+Inline latex is also supported, but I don't recommend using this package on
+simple inline math, such as math symbols, SI units, etc. For that use case, you
+may check cdlatex, which is more than enough to handle that. The setup of
+cdlatex is pretty straightforward, see
+<https://github.com/jkitchin/scimax/issues/117> to get a general idea.
+
+To get started, you may also want to check out
+[yasnippet](https://github.com/joaotavora/yasnippet) to fast insert a latex
+environment before you can use `org-edit-special`
+
 ### TeX Master
-By default, `org-edit-latex` will generate a TeX master file automatically. The master file use the same settings as org preview. With a TeX master, it is possible to:
+By default, `org-edit-latex` will generate a TeX-master file automatically. The
+master file is used for:
 
-- Complete according to specified LaTeX packages.
-- Preview in the edit buffer.
+- Completion in edit buffer via AucTeX
+- Preview in the edit buffer
 
-Following snippet demonstrates how to set up a TeX master:
+The LaTeX packages used by the master file is copied from
+[org-preview](http://orgmode.org/worg/org-tutorials/org-latex-preview.html)
+settings. Additional packages can be added to the master via variable
+`org-edit-latex-packages-alist`.
+
+You can setup a TeX-master like this:
 ```elisp
 (setq org-edit-latex-create-master t)
 (setq org-edit-latex-packages-alist
@@ -57,9 +70,20 @@ Following snippet demonstrates how to set up a TeX master:
         ("" "mathptmx")))
 ```
 
-The master file locates in the same directory as the org file. You can update the master file with `org-edit-latex-update-master` after you change the preview settings.
+The master file locates in the same directory as the org file does. You can
+update the master file via `org-edit-latex-update-master` after changing the
+preview settings.
 
-When you are in the edit buffer, You can use `org-edit-latex-preview-at-point` to preview. By default, the keybinding of `preview-at-point` is remapped to this function.
+You can use `org-edit-latex-preview-at-point` to preview in a edit buffer. By
+default, the keybinding of `preview-at-point` (AucTeX) is remapped to this
+function.
+
+#### Demo
+**with master:**
+![with master](./screenshots/with-master.gif)
+
+**w/o master:**
+![without master](./screenshots/without-master.gif)
 
 ### Change Log
 - 0.8.0 Add support for TeX-master; provide preview function.
@@ -71,5 +95,8 @@ When you are in the edit buffer, You can use `org-edit-latex-preview-at-point` t
 ...
 
 ### TODO
+- [x] Mention cdlatex
+- [x] Mention yasnippet
+- [x] Add more demo gifs
 - [x] Add support for inline math.
 - [x] Turn this feature into a minor mode. (by purcell)
