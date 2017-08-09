@@ -59,16 +59,7 @@ master file is used for:
 
 The LaTeX packages used by the master file is copied from
 [org-preview](http://orgmode.org/worg/org-tutorials/org-latex-preview.html)
-settings. Additional packages can be added to the master via variable
-`org-edit-latex-packages-alist`.
-
-You can setup a TeX-master like this:
-```elisp
-(setq org-edit-latex-create-master t)
-(setq org-edit-latex-packages-alist
-      '(("range-phrase=-,range-units=single" "siunitx")
-        ("" "mathptmx")))
-```
+settings. 
 
 The master file locates in the same directory as the org file does. You can
 update the master file via `org-edit-latex-update-master` after changing the
