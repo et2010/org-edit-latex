@@ -57,7 +57,7 @@ master file is used for:
 - Completion in edit buffer via AucTeX
 - Preview in the edit buffer
 
-The LaTeX packages used by the master file is copied from
+The LaTeX preamble used by the master file is the same as
 [org-preview](http://orgmode.org/worg/org-tutorials/org-latex-preview.html)
 settings. 
 
