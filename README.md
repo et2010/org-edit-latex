@@ -40,15 +40,31 @@ edit buffer.
 Note that all above commands are built-in Org commands and your current
 keybindings will probably do the job.
 
+### Inline Math
 Inline latex is also supported, but I don't recommend using this package on
 simple inline math, such as math symbols, SI units, etc. For that use case, you
 may check cdlatex, which is more than enough to handle that. The setup of
 cdlatex is pretty straightforward, see
 <https://github.com/jkitchin/scimax/issues/117> to get a general idea.
 
+### Entry Point
 To get started, you may also want to check out
 [yasnippet](https://github.com/joaotavora/yasnippet) to fast insert a latex
 environment before you can use `org-edit-special` to enter the edit buffer.
+
+For instance, try `M-x yas-new-snippet` and insert a snippet like this:
+```
+# -*- mode: snippet -*-
+# name: eqn
+# key: eqn
+# --
+\begin{equation}
+  \label{eq:1}
+  $0
+\end{equation}
+```
+After you loaded the snippet, type `eqn` and press tab to insert the snippet.
+Then you can call `org-edit-special` to enter the edit buffer.
 
 ### TeX Master
 By default, `org-edit-latex` will generate a TeX-master file automatically. The
