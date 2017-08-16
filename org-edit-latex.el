@@ -89,10 +89,12 @@
       (progn
         (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
         (advice-add #'org-edit-src-exit :around #'org-edit-latex--unwrap-maybe)
+        (add-hook 'post-command-hook #'org-edit-latex-smart-hint t t)
         (org-edit-latex-create-master-maybe)
         (add-hook 'org-src-mode-hook 'org-edit-latex--set-TeX-master))
     (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
     (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)
+    (remove-hook 'post-command-hook #'org-edit-latex-smart-hint t)
     (remove-hook 'org-src-mode-hook 'org-edit-latex--set-TeX-master)))
 
 
@@ -296,6 +298,14 @@ latex-environment."
                 (apply oldfun args)))
           (apply oldfun args)))
     (apply oldfun args)))
+
+;;;###autoload
+(defun org-edit-latex-smart-hint ()
+  "Show a hint message in echo-area when user is in LaTeX environment."
+  (if (and (equal major-mode 'org-mode)
+           (eq 'latex-environment (car (org-element-context))))
+      (message "You can use `org-edit-latex' [C-c '].")
+    ))
 
 
 (provide 'org-edit-latex)
