@@ -303,9 +303,10 @@ latex-environment."
 (defun org-edit-latex-smart-hint ()
   "Show a hint message in echo-area when user is in LaTeX environment."
   (if (and (equal major-mode 'org-mode)
-           (eq 'latex-environment (car (org-element-context))))
-      (message "You can use `org-edit-latex' [C-c '].")
-    ))
+           (member (car (org-element-context))
+                   '(latex-fragment latex-environment)))
+      (message (substitute-command-keys
+                "Enter edit buffer with `\\[org-edit-special]'."))))
 
 
 (provide 'org-edit-latex)
