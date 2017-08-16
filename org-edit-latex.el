@@ -66,11 +66,19 @@
 
 (defcustom org-edit-latex-frag-master "frag-master.tex"
   "Master file for LaTeX fragments."
+  :type 'string
   :group 'org-edit-latex
   :version "24.4")
 
 (defcustom org-edit-latex-create-master t
   "Decide whether we should create a TeX-master file."
+  :type 'boolean
+  :group 'org-edit-latex
+  :version "24.4")
+
+(defcustom org-edit-latex-show-hint t
+  "Whether we should show hint message in the echo area."
+  :type 'boolean
   :group 'org-edit-latex
   :version "24.4")
 
@@ -89,13 +97,14 @@
       (progn
         (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
         (advice-add #'org-edit-src-exit :around #'org-edit-latex--unwrap-maybe)
-        (add-hook 'post-command-hook #'org-edit-latex-smart-hint t t)
+        (when org-edit-latex-show-hint
+          (add-hook 'post-command-hook #'org-edit-latex-smart-hint t t))
         (org-edit-latex-create-master-maybe)
-        (add-hook 'org-src-mode-hook 'org-edit-latex--set-TeX-master))
+        (add-hook 'org-src-mode-hook #'org-edit-latex--set-TeX-master))
     (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
     (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)
     (remove-hook 'post-command-hook #'org-edit-latex-smart-hint t)
-    (remove-hook 'org-src-mode-hook 'org-edit-latex--set-TeX-master)))
+    (remove-hook 'org-src-mode-hook #'org-edit-latex--set-TeX-master)))
 
 
 ;; TeX-master
