@@ -6,7 +6,7 @@
 ;; URL: https://github.com/et2010/org-edit-latex
 ;; Keywords: org, LaTeX
 ;; Version: 0.8.0
-;; Package-Requires: ((emacs "24.4") (org "9.0") (auctex "11.90"))
+;; Package-Requires: ((emacs "24.4") (auctex "11.90"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -29,11 +29,13 @@
 ;; Install
 ;; =======
 
-;; First, download this package and include its path in your load-path. Then, you can add following in your init file:
+;; First, download this package and include its path in your load-path. Then,
+;; you can add following in your init file:
 
 ;; (require 'org-edit-latex)
 
-;; And don't forget to add latex to `org-babel-load-languages' (below is for demonstration, your languages list may differ from it.)
+;; And don't forget to add latex to `org-babel-load-languages' (below is for
+;; demonstration, your languages list may differ from it.)
 
 ;; (org-babel-do-load-languages
 ;;  'org-babel-load-languages
@@ -60,7 +62,6 @@
 ;;; Code:
 
 (require 'org)
-(require 'org-element)
 (require 'ox-latex)
 (require 'preview)
 
