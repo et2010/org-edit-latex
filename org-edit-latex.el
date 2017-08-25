@@ -83,6 +83,10 @@
   :group 'org-edit-latex
   :version "24.4")
 
+;; silence byte compiler
+(defvar TeX-auto-update)
+(defvar latex-mode-hook)
+
 (defvar-local org-edit-latex--before-type nil
   "Element type before wrapping.")
 
@@ -243,8 +247,7 @@ header."
 
 (defun org-edit-latex--unwrap-latex (ele)
   "Unwrap latex fragment."
-  (let* ((lang (org-element-property :language ele))
-         (beg (org-element-property :begin ele))
+  (let* ((beg (org-element-property :begin ele))
          (end (org-element-property :end ele))
          (pa (org-element-property :post-affiliated ele))
          (pb (org-element-property :post-blank ele))
@@ -275,15 +278,15 @@ header."
 
 (defun org-edit-latex--unwrap-maybe (oldfun &rest args)
   "Unwrap latex fragment only if it meets certain predicates."
-  (if (and (boundp 'org-src--beg-marker)
-           (let ((beg org-src--beg-marker))
-             (save-excursion
-               (set-buffer (marker-buffer beg))
+  (if (and (not (version< org-version "9.0"))
+           (let* ((beg org-src--beg-marker)
+                  (buf (marker-buffer beg)))
+             (with-current-buffer buf
                (goto-char beg)
                (eq 'inline-src-block (car (org-element-context))))))
       (let ((org-src--remote t))
-        (funcall oldfun))
-    (funcall oldfun))
+        (apply oldfun args))
+    (apply oldfun args))
   (when (and org-edit-latex-mode
              (memq org-edit-latex--before-type
                    '(latex-fragment latex-environment)))
