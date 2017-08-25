@@ -209,10 +209,12 @@ header."
          (pb (org-element-property :post-blank ele))
          (pa (org-element-property :post-affiliated ele))
          (type (cond
-                ((eq (car ele) 'latex-environment) 'environment)
+                ((eq (car ele) 'latex-environment)
+                 'environment)
                 ((save-excursion
                    (goto-char beg)
-                   (looking-at-p org-edit-latex-inline-beg-regexp)) 'inline)
+                   (looking-at-p org-edit-latex-inline-beg-regexp))
+                 'inline)
                 (t nil)))
          (pt (point)))
     (save-excursion
