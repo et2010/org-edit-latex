@@ -103,12 +103,19 @@
         (advice-add #'org-edit-special :around #'org-edit-latex--wrap-maybe)
         (advice-add #'org-edit-src-exit :around #'org-edit-latex--unwrap-maybe)
         (when org-edit-latex-show-hint
-          (setq-local eldoc-documentation-function 'org-edit-latex-hinter))
+          (setq-local eldoc-documentation-function
+                      (if (version< org-version "9.0")
+                          #'org-edit-latex-eldoc-function
+                        #'org-edit-latex-hinter)))
         (org-edit-latex-create-master-maybe)
         (add-hook 'org-src-mode-hook #'org-edit-latex--set-TeX-master))
     (advice-remove #'org-edit-special #'org-edit-latex--wrap-maybe)
     (advice-remove #'org-edit-src-exit #'org-edit-latex--unwrap-maybe)
-    (setq-local eldoc-documentation-function 'org-eldoc-documentation-function)
+    (when org-edit-latex-show-hint
+      (setq-local eldoc-documentation-function
+                  (if (version< org-version "9.0")
+                      'ignore
+                    #'org-eldoc-documentation-function)))
     (remove-hook 'org-src-mode-hook #'org-edit-latex--set-TeX-master)))
 
 
@@ -322,9 +329,14 @@ default one in Org mode."
 
 (defun org-edit-latex-eldoc-function ()
   "Eldoc function used to generate a hint when cursor on latex."
-  (let ((ele-type (org-element-type (org-element-context))))
-    (when (or (eq ele-type 'latex-fragment)
-              (eq ele-type 'latex-environment))
+  (let* ((ele (org-element-context))
+         (ele-type (org-element-type ele))
+         (ele-val (org-element-property :value ele)))
+    (when (or (eq ele-type 'latex-environment)
+              (and (eq ele-type 'latex-fragment)
+                   (or (string-prefix-p "\\[" ele-val)
+                       (string-prefix-p "$$" ele-val)
+                       (not (version< org-version "9.0")))))
       (substitute-command-keys
        "Enter edit buffer with `\\[org-edit-special]'."))))
 
