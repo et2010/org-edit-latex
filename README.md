@@ -9,19 +9,19 @@ The latest release of Org (version 9.1) provides a similar feature, i.e. edit
 a latex environment in an edit buffer. But there are still some features
 offered here are not in org yet. Some of them are:
 
-- Complete based on your latex header.
+- **Complete based on your latex header.**
 
   With org-edit-latex, you can complete your latex commands according to the
   #+latex_header: lines in your main org buffer (powered by AucTeX). This is not
   possible in vanilla org.
 
-- Preview in the edit buffer.
+- **Preview in the edit buffer.**
 
   You don't have to quit your edit buffer to do the preview. You can just
   preview at point! With the fantastic AucTeX working behind, you can cache
   your preamble and preview really fast (faster than org-preview).
 
-- Edit and preview latex fragments in edit buffer.
+- **Edit and preview latex fragments in edit buffer.**
 
   Besides LaTeX environments, you can also edit/preview latex fragments in edit
   buffer. This may not count as a feature. but in case you need it, it's there.
